@@ -6,6 +6,20 @@
         <script src="js/app.js"></script>
     </head>
     <body ng-controller="testingAngularCtrl">
-        {{title}}
+       <header><h1> {{title}}</h1></header>
+        
+        <section>
+            <form ng-submit="addDestination()">
+            City: <input name="city" type="text" ng-model="newDestination.city">
+            Country: <input name="country" type="text" ng-model="newDestination.country">
+            
+            <input type="submit" value="Add destination"></form>
+        </section>
+        <section>
+        <h2>Destinations</h2>
+        <ul ng-repeat="dest in destinations">
+            <li>{{ dest.city }} - {{ dest.country }} <button type="button" ng-click="removeDestination($index)">Remove</button></li>
+        </ul>
+        </section>
     </body>
 </html>
