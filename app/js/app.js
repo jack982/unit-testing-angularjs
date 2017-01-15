@@ -1,6 +1,6 @@
 var testingAngluarApp = angular.module('testingAngularApp', []);
 
-testingAngluarApp.controller('testingAngularCtrl', function ($rootScope, $scope, $http) {
+testingAngluarApp.controller('testingAngularCtrl', function ($rootScope, $scope, $http, $timeout) {
     
     $scope.apiKey = "2bc4e3555383fca80056d755bf8d11f3";
 
@@ -36,12 +36,24 @@ testingAngluarApp.controller('testingAngularCtrl', function ($rootScope, $scope,
                 destination.weather.main = response.data.weather[0].main;
                 destination.weather.temp = convertKelvinToCelsius(response.data.main.temp);
             }
+            else {
+                $scope.message = "City not found";
+            }
         }, 
         function(err) {
-            console.error(err);
+            //console.error(err);
+            $scope.message = err.data.message;
         }
       );  
     };
+    
+    $scope.messageWatcher = $scope.$watch('message', function() {
+        if ( $scope.message ) {
+            $timeout( function() {
+                $scope.message = null;
+            }, 3000);
+        }
+    });
     
     var convertKelvinToCelsius = function( temp ) {
         return Math.round( temp - 273 );
