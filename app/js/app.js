@@ -1,6 +1,6 @@
-var testingAngluarApp = angular.module('testingAngularApp', []);
+var testingAngularApp = angular.module('testingAngularApp', []);
 
-testingAngluarApp.controller('testingAngularCtrl', function ($rootScope, $scope, $http, $timeout) {
+testingAngularApp.controller('testingAngularCtrl', function ($rootScope, $scope, $http, $timeout, tempService) {
     
     $scope.apiKey = "2bc4e3555383fca80056d755bf8d11f3";
 
@@ -34,7 +34,7 @@ testingAngluarApp.controller('testingAngularCtrl', function ($rootScope, $scope,
             if( response.data.weather) {
                 destination.weather = {};
                 destination.weather.main = response.data.weather[0].main;
-                destination.weather.temp = convertKelvinToCelsius(response.data.main.temp);
+                destination.weather.temp = tempService.convertKelvinToCelsius(response.data.main.temp);
             }
             else {
                 $scope.message = "City not found";
@@ -55,7 +55,65 @@ testingAngluarApp.controller('testingAngularCtrl', function ($rootScope, $scope,
         }
     });
     
-    var convertKelvinToCelsius = function( temp ) {
+});
+
+testingAngularApp.filter('warmestDestinations', function() {
+    return function(destinationsList, minimumTemp) {
+        var warmDestinations = [];
+        
+        angular.forEach(destinationsList, function(dest) {
+           
+            if ( dest.weather && dest.weather.temp && dest.weather.temp >= minimumTemp ) {
+                warmDestinations.push( dest );
+            } 
+        }); 
+        
+        return warmDestinations;
+        
+    };
+});
+
+testingAngularApp.factory('tempService', function() {
+    return {
+        convertKelvinToCelsius : convertKelvinToCelsius
+    };
+    
+    function convertKelvinToCelsius(temp) {
         return Math.round( temp - 273 );
+    }
+});
+
+testingAngularApp.directive('destinationDirective', function() {
+    return {
+        restrict: 'E',
+        scope: {
+            destinations: '=',
+            apiKey: '=',
+            onRemove: '&'
+        },
+        templateUrl: 'js/destinationDirective.tmpl.html',
+        controller: function( $rootScope, $scope, $http, tempService ) {
+            var self = this;
+            
+            self.getWeather = function( destination ) {
+                 $http.get('http://api.openweathermap.org/data/2.5/weather?q=' + destination.city + '&appid=' + $scope.apiKey).then(
+                    function(response){
+                        if( response.data.weather) {
+                            destination.weather = {};
+                            destination.weather.main = response.data.weather[0].main;
+                            destination.weather.temp = tempService.convertKelvinToCelsius( response.data.main.temp );
+                        }
+                        else {
+                            $rootScope.message = "City not found";
+                        }
+                    }, 
+                    function(err) {
+                        //console.error(err);
+                        $rootScope.message = err.data.message;
+                    }
+                );  
+            };    
+        },
+        controllerAs: 'vm'
     }
 });

@@ -116,4 +116,66 @@ describe('TestingAngularJS Test Suite', function(){
         });
     });
     
+    describe('Testing AngularJS Filter', function() {
+        it('should return only warm destinations', inject( function($filter) {
+            var warmest = $filter('warmestDestinations');
+            
+            var destinations = [
+                {
+                    city: 'Bejing',
+                    country: 'China',
+                    weather: {
+                        temp: 21
+                    }
+                },
+                {
+                    city: 'Rome',
+                    country: 'Italy'
+                   /* ,weather: {
+                        temp: 9
+                    }
+                    */
+                },
+                {
+                    city: 'Miami',
+                    country: 'USA',
+                    weather: {
+                        temp: 25
+                    }
+                },
+                {
+                    city: 'Paris',
+                    country: 'France',
+                    weather: {
+                        temp: 3
+                    }
+                }
+            ];
+            
+            expect(destinations.length).toBe(4);
+            
+            var warmDestinations = warmest(destinations, 15);
+            
+            expect(warmDestinations.length).toBe(2);
+            expect(warmDestinations[0].city).toBe('Bejing');
+            expect(warmDestinations[1].city).toBe('Miami');
+        }));
+    });
+    
+    describe('Testing AngularJS Service', function() {
+       it('should return Celsius temperature', inject( function(tempService) {
+           var destination = {
+               city: 'Moscow',
+               country: 'Russia',
+               weather: {
+                   temp: 262 // Celsius = Kelvin - 273 
+               }
+           };
+           
+           expect(destination.weather.temp).toBe(262);
+           var celsiusTemp = tempService.convertKelvinToCelsius( destination.weather.temp );
+           expect( celsiusTemp ).toBe(-11);
+           
+       })); 
+    });
 });

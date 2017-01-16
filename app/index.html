@@ -18,12 +18,14 @@
         <section>
         <h2>Destinations</h2>
             <div ng-show="message" style="color: #F00;">{{ message }}</div>
-        <ul ng-repeat="dest in destinations">
-            <li>{{ dest.city }} - {{ dest.country }} <span ng-if="dest.weather"> - {{ dest.weather.main }}, {{ dest.weather.temp }}</span>  
-                <button type="button" ng-click="getWeather(dest)">Get weather</button>
-                <button type="button" ng-click="removeDestination($index)">Remove</button>
-            </li>
-        </ul>
+            <data-destination-directive destinations="destinations" api-key="apiKey" onRemove="removeDestination()"></data-destination-directive>
+        </section>
+        
+        <section>
+            <h2>Warmest Destinations</h2>
+            <ul>
+                <li ng-repeat="destination in destinations | warmestDestinations:20">{{destination.city}} [{{destination.country}}] - {{destination.weather.temp}}</li>
+            </ul>
         </section>
     </body>
 </html>
