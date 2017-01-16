@@ -210,7 +210,7 @@ describe('TestingAngularJS Test Suite', function(){
         }));
     
         it('should update the weather for a specific destination', function() {
-            spyOn(conversionService, 'convertKelvinToCelsius').and.callThrough(); // and.returnValue(16);
+            spyOn(conversionService, 'convertKelvinToCelsius').and.callThrough(); // .and.returnValue(16); // .and.callFake( function(temp) { return temp - 272 });
              
             scope.destination = scope.destinations[0];
             
