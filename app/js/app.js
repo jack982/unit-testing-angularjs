@@ -91,11 +91,10 @@ testingAngularApp.directive('destinationDirective', function() {
             apiKey: '=',
             onRemove: '&'
         },
-        templateUrl: 'js/destinationDirective.tmpl.html',
         controller: function( $rootScope, $scope, $http, tempService ) {
-            var self = this;
+            //var self = this;
             
-            self.getWeather = function( destination ) {
+            $scope.getWeather = function( destination ) {
                  $http.get('http://api.openweathermap.org/data/2.5/weather?q=' + destination.city + '&appid=' + $scope.apiKey).then(
                     function(response){
                         if( response.data.weather) {
@@ -114,6 +113,8 @@ testingAngularApp.directive('destinationDirective', function() {
                 );  
             };    
         },
-        controllerAs: 'vm'
+       // controllerAs: 'vm',
+       // templateUrl: 'js/destinationDirective.tmpl.html'
+        template: '<ul ng-repeat="dest in destinations"><li>{{ dest.city }} - {{ dest.country }} <span ng-if="dest.weather"> - {{ dest.weather.main }}, {{ dest.weather.temp }}</span> <button type="button" ng-click="getWeather(dest)">Get weather</button> <button type="button" ng-click="onRemove( { index: $index } )">Remove</button> </li> </ul>'
     }
 });

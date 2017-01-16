@@ -1,6 +1,6 @@
  <ul ng-repeat="dest in destinations">
     <li>{{ dest.city }} - {{ dest.country }} <span ng-if="dest.weather"> - {{ dest.weather.main }}, {{ dest.weather.temp }}</span>  
         <button type="button" ng-click="vm.getWeather(dest)">Get weather</button>
-        <button type="button" ng-click="onRemove($index)()">Remove</button>
+        <button type="button" ng-click="onRemove( { index: $index } )">Remove</button>
     </li>
 </ul>

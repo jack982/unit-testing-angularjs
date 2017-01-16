@@ -18,7 +18,7 @@
         <section>
         <h2>Destinations</h2>
             <div ng-show="message" style="color: #F00;">{{ message }}</div>
-            <data-destination-directive destinations="destinations" api-key="apiKey" onRemove="removeDestination()"></data-destination-directive>
+            <data-destination-directive destinations="destinations" api-key="apiKey" on-remove="removeDestination(index)"></data-destination-directive>
         </section>
         
         <section>

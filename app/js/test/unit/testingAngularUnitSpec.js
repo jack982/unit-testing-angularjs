@@ -82,29 +82,7 @@ describe('TestingAngularJS Test Suite', function(){
             
         });
         
-        
-        it('should update the weather for a specific destination', function() {
-            scope.destination = {
-                city: 'Bologna',
-                country: 'Italy'
-            };
-            
-            httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond(
-                {
-                    weather: [ { main : 'Rain', detail : 'Light rain'} ],
-                    main: {temp: 288}
-                }
-            );
-            
-            scope.getWeather( scope.destination );
-            
-            httpBackend.flush();
-            
-            expect(scope.destination.weather.main).toBe('Rain');
-            expect(scope.destination.weather.temp).toBe(15);
-        });
-        
-        
+                
         it('should remove the error message after a fixed period of time', function() {
             scope.message = 'Error';
             expect(scope.message).toBe('Error');
@@ -178,4 +156,87 @@ describe('TestingAngularJS Test Suite', function(){
            
        })); 
     });
+    
+    
+    describe('Testing AngularJS Directive', function() {
+        var scope, template, httpBackend, isolateScope;
+        
+        beforeEach(inject(function($compile, $rootScope, $httpBackend) {
+            scope = $rootScope.$new();
+                     
+            httpBackend = $httpBackend;
+            
+            scope.apiKey = "xyz";
+            
+            scope.destinations = [
+                {
+                    city: 'Tokyo',
+                    country: 'Japan'
+                }
+            ];
+            
+            var element = angular.element( 
+                '<data-destination-directive destinations="destinations" api-key="apiKey" on-remove="removeDestinations(index)"></data-destination-directive>'
+            );
+            
+            template = $compile(element)(scope);
+            scope.$digest();
+            
+            // because we are testing directive's isolated scope
+            isolateScope = element.isolateScope();
+            
+        }));
+    
+        it('should update the weather for a specific destination', function() {
+            scope.destination = scope.destinations[0];
+            
+            httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond(
+                {
+                    weather: [ { main : 'Rain', detail : 'Light rain'} ],
+                    main: {temp: 288}
+                }
+            );
+            
+            expect(scope.destination.city).toBe('Tokyo');
+            
+            isolateScope.getWeather( scope.destination );
+            
+            httpBackend.flush();
+            
+            expect(scope.destination.weather.main).toBe('Rain');
+            expect(scope.destination.weather.temp).toBe(15);
+        });
+        
+        it('should call the parent controller removeDestination() function', function() {
+            scope.removeTest = 1;
+            
+            scope.removeDestinations = function() {
+                scope.removeTest++;
+            };
+            
+            isolateScope.onRemove();
+            
+            expect(scope.removeTest).toBe(2);
+        });
+        
+        it('should generate the correct HTML', function() {
+            var templateAsHtml = template.html();
+            
+            expect(templateAsHtml).toContain('Tokyo - Japan');
+            
+            scope.destinations = [
+                {
+                    city: 'London',
+                    country: 'England'
+                }
+            ];
+            
+            scope.$digest();
+            templateAsHtml = template.html();
+            
+            expect(templateAsHtml).toContain('London - England');
+        });
+        
+    });
+    
 });
