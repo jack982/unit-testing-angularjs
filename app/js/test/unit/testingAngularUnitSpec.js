@@ -1,6 +1,6 @@
 describe('TestingAngularJS Test Suite', function(){
     
-    beforeEach( module('testingAngularApp') );  // include app module in our tests 
+    beforeEach( module('testingAngularApp' ));  // include app module in our tests 
     
     describe('Testing AngularJS Controller', function() {
         
@@ -159,12 +159,33 @@ describe('TestingAngularJS Test Suite', function(){
     
     
     describe('Testing AngularJS Directive', function() {
-        var scope, template, httpBackend, isolateScope;
+        var scope, template, directiveController, httpBackend, isolateScope, rootScope;
         
-        beforeEach(inject(function($compile, $rootScope, $httpBackend) {
+        
+        beforeEach( module('js/destinationDirective.tmpl.html') );
+        
+        // mock dependency (before inject)
+        beforeEach( function() {
+            module(function($provide) {
+                var mockedConversionService = {
+                    convertKelvinToCelsius: function( temp ) {
+                        return Math.round( temp - 273 );
+                    }
+                }
+                
+                $provide.value('tempService', mockedConversionService);
+            });
+        });
+        
+        beforeEach(inject(function($compile, $rootScope, $httpBackend, _tempService_ ) {
+            
             scope = $rootScope.$new();
+            
+            rootScope = $rootScope;
                      
             httpBackend = $httpBackend;
+            
+            conversionService = _tempService_;
             
             scope.apiKey = "xyz";
             
@@ -179,6 +200,7 @@ describe('TestingAngularJS Test Suite', function(){
                 '<data-destination-directive destinations="destinations" api-key="apiKey" on-remove="removeDestinations(index)"></data-destination-directive>'
             );
             
+                       
             template = $compile(element)(scope);
             scope.$digest();
             
@@ -188,6 +210,8 @@ describe('TestingAngularJS Test Suite', function(){
         }));
     
         it('should update the weather for a specific destination', function() {
+            spyOn(conversionService, 'convertKelvinToCelsius').and.callThrough(); // and.returnValue(16);
+             
             scope.destination = scope.destinations[0];
             
             httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond(
@@ -205,6 +229,46 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(scope.destination.weather.main).toBe('Rain');
             expect(scope.destination.weather.temp).toBe(15);
+            expect(conversionService.convertKelvinToCelsius).toHaveBeenCalledWith(288);
+        });
+        
+        it('should add a message if no city is found', function() {
+            scope.destination = scope.destinations[0];
+            
+            scope.message = undefined;
+            
+            httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond( {} );
+            
+            expect(scope.destination.city).toBe('Tokyo');
+            
+            isolateScope.getWeather( scope.destination );
+            
+            httpBackend.flush();
+            
+            expect(rootScope.message).toBe('City not found');
+        });
+        
+         it('should add a message if an HTTP error occurs', function() {
+             
+             
+            spyOn(rootScope, '$broadcast');
+             
+            scope.destination = scope.destinations[0];
+            
+            scope.message = undefined;
+            
+            httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond( 502 );
+            
+            expect(scope.destination.city).toBe('Tokyo');
+            
+            isolateScope.getWeather( scope.destination );
+            
+            httpBackend.flush();
+            
+            expect(rootScope.message).toBeDefined();
+            expect(rootScope.$broadcast).toHaveBeenCalled(); // check that the spy was called at least once
+            expect(rootScope.$broadcast).toHaveBeenCalledWith( 'messageUpdated', { type: 'error', message: 'server error'} );
+            expect(rootScope.$broadcast.calls.counts()).toBe(1);
         });
         
         it('should call the parent controller removeDestination() function', function() {

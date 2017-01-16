@@ -92,10 +92,9 @@ testingAngularApp.directive('destinationDirective', function() {
             onRemove: '&'
         },
         controller: function( $rootScope, $scope, $http, tempService ) {
-            //var self = this;
-            
+                      
             $scope.getWeather = function( destination ) {
-                 $http.get('http://api.openweathermap.org/data/2.5/weather?q=' + destination.city + '&appid=' + $scope.apiKey).then(
+                $http.get('http://api.openweathermap.org/data/2.5/weather?q=' + destination.city + '&appid=' + $scope.apiKey).then(
                     function(response){
                         if( response.data.weather) {
                             destination.weather = {};
@@ -109,12 +108,14 @@ testingAngularApp.directive('destinationDirective', function() {
                     function(err) {
                         //console.error(err);
                         $rootScope.message = err.data.message;
+                        $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'server error'} );
                     }
                 );  
             };    
         },
-       // controllerAs: 'vm',
+      //  controllerAs: 'vm',
        // templateUrl: 'js/destinationDirective.tmpl.html'
-        template: '<ul ng-repeat="dest in destinations"><li>{{ dest.city }} - {{ dest.country }} <span ng-if="dest.weather"> - {{ dest.weather.main }}, {{ dest.weather.temp }}</span> <button type="button" ng-click="getWeather(dest)">Get weather</button> <button type="button" ng-click="onRemove( { index: $index } )">Remove</button> </li> </ul>'
+    //    template: '<ul ng-repeat="dest in destinations"><li>{{ dest.city }} - {{ dest.country }} <span ng-if="dest.weather"> - {{ dest.weather.main }}, {{ dest.weather.temp }}</span> <button type="button" ng-click="vm.getWeather(dest)">Get weather</button> <button type="button" ng-click="onRemove( { index: $index } )">Remove</button> </li> </ul>'
+        templateUrl: 'js/destinationDirective.tmpl.html'
     }
 });

@@ -18,7 +18,8 @@ module.exports = function(config) {
         '../../bower_components/angular/angular.js',
         '../../bower_components/angular-mocks/angular-mocks.js',
         '../app.js',
-        'unit/*.js'
+        'unit/*.js',
+        'app/js/**/*.tmpl.html'
     ],
 
 
@@ -30,17 +31,29 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        '../../*.html': ['ng-html2js'],
-        '../*.tmpl.html': ['ng-html2js']
+        'app/js/**/*.tmpl.html': ['ng-html2js'],
+        '../app.js': 'coverage'
+    },
+      
+    ngHtml2JsPreprocessor: {
+        // setting this option will create only a single module that contains templates
+        // from all the files, so you can load them all with module('foo')
+        stripPrefix: 'app/',
+        moduleName: 'test-templates'
     },
 
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress'],
+    reporters: ['progress', 'coverage'],
 
 
+    coverageReporter: {
+        type: 'html',
+        dir: 'coverage/'
+    },
+      
     // web server port
     port: 9876,
 

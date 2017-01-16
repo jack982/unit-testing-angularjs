@@ -18,13 +18,17 @@
         <section>
         <h2>Destinations</h2>
             <div ng-show="message" style="color: #F00;">{{ message }}</div>
-            <data-destination-directive destinations="destinations" api-key="apiKey" on-remove="removeDestination(index)"></data-destination-directive>
+            <data-destination-directive 
+                    destinations="destinations"
+                    api-key="apiKey" 
+                    on-remove="removeDestination(index)">
+            </data-destination-directive>
         </section>
         
         <section>
             <h2>Warmest Destinations</h2>
             <ul>
-                <li ng-repeat="destination in destinations | warmestDestinations:20">{{destination.city}} [{{destination.country}}] - {{destination.weather.temp}}</li>
+                <li ng-repeat="destination in destinations | warmestDestinations:10">{{destination.city}} [{{destination.country}}] - {{destination.weather.temp}}</li>
             </ul>
         </section>
     </body>
