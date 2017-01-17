@@ -19,7 +19,7 @@ module.exports = function(config) {
         '../../bower_components/angular-mocks/angular-mocks.js',
         '../app.js',
         'unit/*.js',
-        'app/js/**/*.tmpl.html'
+        '../../tpl/*.html'
     ],
 
 
@@ -31,14 +31,14 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'app/js/**/*.tmpl.html': ['ng-html2js'],
+        '../../tpl/*.html': 'ng-html2js',
         '../app.js': 'coverage'
     },
       
     ngHtml2JsPreprocessor: {
         // setting this option will create only a single module that contains templates
         // from all the files, so you can load them all with module('foo')
-        stripPrefix: 'app/',
+        stripPrefix: '.*/app/',
         moduleName: 'test-templates'
     },
 

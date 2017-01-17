@@ -27,25 +27,7 @@ testingAngularApp.controller('testingAngularCtrl', function ($rootScope, $scope,
     $scope.removeDestination = function(index) {
         $scope.destinations.splice(index, 1);
     };
-    
-    $scope.getWeather = function(destination) {
-      $http.get('http://api.openweathermap.org/data/2.5/weather?q=' + destination.city + '&appid=' + $scope.apiKey).then(
-        function(response){
-            if( response.data.weather) {
-                destination.weather = {};
-                destination.weather.main = response.data.weather[0].main;
-                destination.weather.temp = tempService.convertKelvinToCelsius(response.data.main.temp);
-            }
-            else {
-                $scope.message = "City not found";
-            }
-        }, 
-        function(err) {
-            //console.error(err);
-            $scope.message = err.data.message;
-        }
-      );  
-    };
+   
     
     $scope.messageWatcher = $scope.$watch('message', function() {
         if ( $scope.message ) {
@@ -107,8 +89,8 @@ testingAngularApp.directive('destinationDirective', function() {
                     }, 
                     function(err) {
                         //console.error(err);
-                        $rootScope.message = err.data.message;
-                        $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'server error'} );
+                        $rootScope.message = 'Server error';//err.data.message;
+                        $rootScope.$broadcast('messageUpdated', { type: 'error', message: 'Server error'} );
                     }
                 );  
             };    
@@ -116,6 +98,6 @@ testingAngularApp.directive('destinationDirective', function() {
       //  controllerAs: 'vm',
        // templateUrl: 'js/destinationDirective.tmpl.html'
     //    template: '<ul ng-repeat="dest in destinations"><li>{{ dest.city }} - {{ dest.country }} <span ng-if="dest.weather"> - {{ dest.weather.main }}, {{ dest.weather.temp }}</span> <button type="button" ng-click="vm.getWeather(dest)">Get weather</button> <button type="button" ng-click="onRemove( { index: $index } )">Remove</button> </li> </ul>'
-        templateUrl: 'js/destinationDirective.tmpl.html'
+        templateUrl: 'tpl/destinationDirective.html'
     }
 });

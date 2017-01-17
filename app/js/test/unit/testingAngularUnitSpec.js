@@ -162,7 +162,9 @@ describe('TestingAngularJS Test Suite', function(){
         var scope, template, directiveController, httpBackend, isolateScope, rootScope;
         
         
-        beforeEach( module('js/destinationDirective.tmpl.html') );
+       // beforeEach( module('tpl/destinationDirective.html') );
+        beforeEach( module('test-templates') );
+        
         
         // mock dependency (before inject)
         beforeEach( function() {
@@ -232,6 +234,7 @@ describe('TestingAngularJS Test Suite', function(){
             expect(conversionService.convertKelvinToCelsius).toHaveBeenCalledWith(288);
         });
         
+        
         it('should add a message if no city is found', function() {
             scope.destination = scope.destinations[0];
             
@@ -248,16 +251,17 @@ describe('TestingAngularJS Test Suite', function(){
             expect(rootScope.message).toBe('City not found');
         });
         
+        
+        
          it('should add a message if an HTTP error occurs', function() {
-             
              
             spyOn(rootScope, '$broadcast');
              
             scope.destination = scope.destinations[0];
             
-            scope.message = undefined;
+            rootScope.message = undefined;
             
-            httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond( 502 );
+            httpBackend.expectGET('http://api.openweathermap.org/data/2.5/weather?q=' + scope.destination.city + '&appid=' + scope.apiKey).respond( 500 );
             
             expect(scope.destination.city).toBe('Tokyo');
             
@@ -267,8 +271,8 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(rootScope.message).toBeDefined();
             expect(rootScope.$broadcast).toHaveBeenCalled(); // check that the spy was called at least once
-            expect(rootScope.$broadcast).toHaveBeenCalledWith( 'messageUpdated', { type: 'error', message: 'server error'} );
-            expect(rootScope.$broadcast.calls.counts()).toBe(1);
+            expect(rootScope.$broadcast).toHaveBeenCalledWith( 'messageUpdated', { type: 'error', message: 'Server error'} );
+            expect(rootScope.$broadcast.calls.count()).toBe(1);
         });
         
         it('should call the parent controller removeDestination() function', function() {
@@ -282,6 +286,7 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(scope.removeTest).toBe(2);
         });
+        
         
         it('should generate the correct HTML', function() {
             var templateAsHtml = template.html();
@@ -300,7 +305,7 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(templateAsHtml).toContain('London - England');
         });
-        
+    
     });
     
 });
