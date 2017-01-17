@@ -5,7 +5,7 @@ describe('TestingAngularJS Test Suite', function(){
     describe('Testing AngularJS Controller', function() {
         
         var scope, ctrl, httpBackend, timeout;
-        
+         
         beforeEach(
             inject(function($controller, $rootScope, $httpBackend, $timeout) {
                 scope = $rootScope.$new();
@@ -209,6 +209,9 @@ describe('TestingAngularJS Test Suite', function(){
             // because we are testing directive's isolated scope
             isolateScope = element.isolateScope();
             
+            // if we are using directive controllers ('controllerAs') instead of isolated scope then we can get the instance like this
+            directiveController = element.controller('destinationDirective');
+            
         }));
     
         it('should update the weather for a specific destination', function() {
@@ -225,7 +228,8 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(scope.destination.city).toBe('Tokyo');
             
-            isolateScope.getWeather( scope.destination );
+            //isolateScope.getWeather( scope.destination );
+            directiveController.getWeather( scope.destination );
             
             httpBackend.flush();
             
@@ -244,7 +248,8 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(scope.destination.city).toBe('Tokyo');
             
-            isolateScope.getWeather( scope.destination );
+            //isolateScope.getWeather( scope.destination );
+            directiveController.getWeather( scope.destination );
             
             httpBackend.flush();
             
@@ -265,7 +270,8 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(scope.destination.city).toBe('Tokyo');
             
-            isolateScope.getWeather( scope.destination );
+            //isolateScope.getWeather( scope.destination );
+            directiveController.getWeather( scope.destination );
             
             httpBackend.flush();
             
