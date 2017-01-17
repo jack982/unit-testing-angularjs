@@ -235,6 +235,7 @@ describe('TestingAngularJS Test Suite', function(){
             
             expect(scope.destination.weather.main).toBe('Rain');
             expect(scope.destination.weather.temp).toBe(15);
+            // mocked service
             expect(conversionService.convertKelvinToCelsius).toHaveBeenCalledWith(288);
         });
         
