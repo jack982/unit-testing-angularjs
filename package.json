@@ -7,11 +7,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://bitbucket.org/jpenazzi/unit-testing-angularjs.git"
+    "url": ""
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/jpenazzi/unit-testing-angularjs",
+  "homepage": "",
   "devDependencies": {
     "bower": "^1.6.3",
     "jasmine": "^2.5.3",
